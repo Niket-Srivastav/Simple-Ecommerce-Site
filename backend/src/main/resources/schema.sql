@@ -1,1 +1,0 @@
-create table product (id integer not null, available boolean, brand varchar(255), category varchar(255), desc varchar(255), name varchar(255), price numeric(38,2), quantity integer not null, release_date date, primary key (id))
