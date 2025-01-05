@@ -1,17 +1,18 @@
 package com.Niket.Controller;
 
-import java.net.http.HttpResponse;
+import java.io.IOException;
+import java.util.HexFormat;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -20,8 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.Niket.Model.Product;
 import com.Niket.service.productService;
-
-import jakarta.annotation.PostConstruct;
 
 @RestController
 @CrossOrigin
@@ -62,5 +61,32 @@ public class ProductController {
     Product product = service.getProductbyId(prodId);
     byte[] imageFile = product.getImageData();
     return new ResponseEntity<>(imageFile, HttpStatus.OK);
+  }
+
+  @PutMapping("/product/{prodId}")
+  public ResponseEntity<String> updateProduct(@PathVariable int prodId, @RequestPart Product product,
+      @RequestPart MultipartFile imageFile) throws IOException {
+    Product product1 = service.updateProduct(prodId, product, imageFile);
+    if (product1 != null) {
+      return new ResponseEntity<>("Updated", HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>("Failed to update product", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @DeleteMapping("/product/{prodId}")
+  public ResponseEntity<String> deleteProduct(@PathVariable int prodId) {
+    Product product = service.deleteProduct(prodId);
+    if (product != null) {
+      return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>("Failed to delete product", HttpStatus.NOT_FOUND);
+    }
+  }
+
+  @GetMapping("/products/search")
+  public ResponseEntity<List<Product>> searchProduct(@RequestParam String keyword) {
+    List<Product> products = service.searchProduct(keyword);
+    return new ResponseEntity<>(products, HttpStatus.OK);
   }
 }

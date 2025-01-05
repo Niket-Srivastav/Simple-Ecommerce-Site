@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Home from "./Home"
 import axios from "axios";
+// import { json } from "react-router-dom";
+// import { BiSunFill, BiMoon } from "react-icons/bi";
 
 const Navbar = ({ onSelectCategory, onSearch }) => {
   const getInitialTheme = () => {
-    return "light-theme";
+    const storedTheme = localStorage.getItem("theme");
+    return storedTheme ? storedTheme : "light-theme";
   };
   const [selectedCategory, setSelectedCategory] = useState("");
   const [theme, setTheme] = useState(getInitialTheme());
@@ -33,7 +36,7 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
       setShowSearchResults(true)
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/products/search?name=${value}`
+        `http://localhost:8080/api/products/search?keyword=${value}`
       );
       setSearchResults(response.data);
       setNoResults(response.data.length === 0);
@@ -59,7 +62,6 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
 
   useEffect(() => {
     document.body.className = theme;
-    document.getElementById('root').className = theme; // Add this line to ensure the root div also gets the theme class
   }, [theme]);
 
   const categories = [
@@ -132,6 +134,13 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
 
                 <li className="nav-item"></li>
               </ul>
+              <button className="theme-btn" onClick={() => toggleTheme()}>
+                {theme === "dark-theme" ? (
+                  <i className="bi bi-moon-fill"></i>
+                ) : (
+                  <i className="bi bi-sun-fill"></i>
+                )}
+              </button>
               <div className="d-flex align-items-center cart">
                 <a href="/cart" className="nav-link text-dark">
                   <i
